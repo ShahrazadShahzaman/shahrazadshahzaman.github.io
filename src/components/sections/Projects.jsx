@@ -66,9 +66,8 @@ function Projects() {
 
           <motion.div
             initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.2 }}
-            transition={{ duration: 0.7 }}
+  animate={{ opacity: 1, y: 0 }}
+  transition={{ duration: 0.7 }}
           >
             <p className="font-semibold uppercase tracking-[0.3em] text-cyan-400">
               Projects
@@ -103,12 +102,11 @@ function Projects() {
                     project?.id ||
                     `featured-${index}`
                   }
-                  initial={{ opacity: 0, y: 40 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, amount: 0.15 }}
-                  transition={{
-                    duration: 0.6,
-                    delay: index * 0.1,
+               initial={{ opacity: 0, y: 40 }}
+animate={{ opacity: 1, y: 0 }}
+transition={{
+  duration: 0.6,
+  delay: index * 0.1,
                   }}
                   whileHover={{ y: -8 }}
                   className="group min-w-0 rounded-3xl border border-slate-800 bg-slate-900 p-6 transition-all duration-300 hover:border-cyan-400/60 hover:shadow-[0_0_40px_rgba(34,211,238,0.08)] sm:p-8"
@@ -205,9 +203,8 @@ function Projects() {
             <>
               <motion.h3
                 initial={{ opacity: 0, y: 25 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6 }}
+  animate={{ opacity: 1, y: 0 }}
+  transition={{ duration: 0.6 }}
                 className="mt-24 text-3xl font-bold text-white"
               >
                 Other Projects
@@ -222,13 +219,12 @@ function Projects() {
                       project?.id ||
                       `other-${index}`
                     }
-                    initial={{ opacity: 0, y: 25 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{
-                      duration: 0.5,
-                      delay: index * 0.05,
-                    }}
+         initial={{ opacity: 0, y: 25 }}
+animate={{ opacity: 1, y: 0 }}
+transition={{
+  duration: 0.5,
+  delay: index * 0.05,}}
+                    
                     whileHover={{ y: -5 }}
                     className="min-w-0 rounded-2xl border border-slate-800 bg-slate-900 p-5 transition-all duration-300 hover:border-cyan-400/60 hover:shadow-[0_0_25px_rgba(34,211,238,0.06)] sm:p-6"
                   >
