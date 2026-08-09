@@ -10,7 +10,7 @@ function SectionWrapper({ children, id, className = "" }) {
         duration: 0.8,
         ease: "easeOut",
       }}
-      viewport={{ once: true, amount: 0.5 }}
+      viewport={{ once: true, amount: 0.2 }}
       className={className}
     >
       {children}
