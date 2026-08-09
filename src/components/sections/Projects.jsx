@@ -48,14 +48,16 @@ function Projects() {
 
     loadProjects();
   }, []);
+const featuredProjects = projects;
 
-const featuredProjects = projects.filter(
-  (project) => project?.featured
-);
+const otherProjects = [];
+// const featuredProjects = projects.filter(
+//   (project) => project?.featured
+// );
 
-const otherProjects = projects.filter(
-  (project) => !project?.featured
-);
+// const otherProjects = projects.filter(
+//   (project) => !project?.featured
+// );
 
   return (
   
