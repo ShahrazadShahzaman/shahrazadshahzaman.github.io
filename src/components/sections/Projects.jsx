@@ -5,62 +5,98 @@ import SectionWrapper from "../common/sectionwrapper";
 
 function Projects() {
   const [projects, setProjects] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    sanityClient
-      .fetch(`*[_type == "project"] | order(_createdAt desc)`)
-      .then((data) => {
-        setProjects(Array.isArray(data) ? data : []);
-      })
-      .catch((error) => {
+    const loadProjects = async () => {
+      try {
+        const data = await sanityClient.fetch(`
+          *[_type == "project"] | order(_createdAt desc) {
+            _id,
+            title,
+            category,
+            description,
+            technologies,
+            github,
+            live,
+            status,
+            featured
+          }
+        `);
+
+        if (Array.isArray(data)) {
+          setProjects(
+            data.map((project) => ({
+              ...project,
+              technologies: Array.isArray(project?.technologies)
+                ? project.technologies.filter(
+                    (tech) => typeof tech === "string"
+                  )
+                : [],
+            }))
+          );
+        } else {
+          setProjects([]);
+        }
+      } catch (error) {
         console.error("Sanity fetch error:", error);
         setProjects([]);
-      });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadProjects();
   }, []);
 
   const featuredProjects = projects.filter(
-    (project) => project?.featured
+    (project) => project?.featured === true
   );
 
   const otherProjects = projects.filter(
-    (project) => !project?.featured
+    (project) => project?.featured !== true
   );
 
   return (
     <SectionWrapper id="projects">
-      <section  className="bg-slate-900 py-28 px-6"
->
-      <div className="mx-auto w-full max-w-7xl">
-        {/* SECTION HEADER */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.2 }}
-          transition={{ duration: 0.7 }}
-        >
-          <p className="font-semibold uppercase tracking-[0.3em] text-cyan-400">
-            Projects
-          </p>
+      <section className="bg-slate-900 py-28 px-6">
+        <div className="mx-auto w-full max-w-7xl">
 
-          <h2 className="mt-4 text-4xl font-bold text-white md:text-5xl">
-            Featured Work
-          </h2>
+          {/* SECTION HEADER */}
 
-          <p className="mt-6 max-w-3xl text-lg leading-8 text-slate-400">
-            A selection of projects that reflect my journey in frontend
-            development, AI, and continuous learning.
-          </p>
-        </motion.div>
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.2 }}
+            transition={{ duration: 0.7 }}
+          >
+            <p className="font-semibold uppercase tracking-[0.3em] text-cyan-400">
+              Projects
+            </p>
 
-        {/* FEATURED PROJECTS */}
-        {featuredProjects.length > 0 && (
-          <div className="mt-16 grid grid-cols-1 gap-8 lg:grid-cols-2">
-            {featuredProjects.map((project, index) => {
-              const technologies = Array.isArray(project?.technologies)
-                ? project.technologies
-                : [];
+            <h2 className="mt-4 text-4xl font-bold text-white md:text-5xl">
+              Featured Work
+            </h2>
 
-              return (
+            <p className="mt-6 max-w-3xl text-lg leading-8 text-slate-400">
+              A selection of projects that reflect my journey in frontend
+              development, AI, and continuous learning.
+            </p>
+          </motion.div>
+
+          {/* LOADING */}
+
+          {loading && (
+            <div className="mt-16 text-slate-400">
+              Loading projects...
+            </div>
+          )}
+
+          {/* FEATURED PROJECTS */}
+
+          {!loading && featuredProjects.length > 0 && (
+            <div className="mt-16 grid grid-cols-1 gap-8 lg:grid-cols-2">
+              {featuredProjects.map((project, index) => (
                 <motion.article
                   key={
                     project?._id ||
@@ -77,7 +113,9 @@ function Projects() {
                   whileHover={{ y: -8 }}
                   className="group min-w-0 rounded-3xl border border-slate-800 bg-slate-900 p-6 transition-all duration-300 hover:border-cyan-400/60 hover:shadow-[0_0_40px_rgba(34,211,238,0.08)] sm:p-8"
                 >
+
                   {/* TOP */}
+
                   <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                     <span className="text-sm font-medium text-cyan-400">
                       {project?.category || "Project"}
@@ -99,19 +137,23 @@ function Projects() {
                   </div>
 
                   {/* TITLE */}
+
                   <h3 className="mt-5 break-words text-2xl font-bold text-white sm:text-3xl">
                     {project?.title || "Untitled Project"}
                   </h3>
 
                   {/* DESCRIPTION */}
+
                   <p className="mt-5 break-words leading-8 text-slate-400">
-                    {project?.description || "Project description coming soon."}
+                    {project?.description ||
+                      "Project description coming soon."}
                   </p>
 
                   {/* TECHNOLOGIES */}
-                  {technologies.length > 0 && (
+
+                  {project.technologies.length > 0 && (
                     <div className="mt-6 flex flex-wrap gap-2">
-                      {technologies.map((tech, techIndex) => (
+                      {project.technologies.map((tech, techIndex) => (
                         <span
                           key={`${tech}-${techIndex}`}
                           className="rounded-full border border-cyan-400/10 bg-cyan-500/10 px-3 py-2 text-sm text-cyan-300"
@@ -123,8 +165,10 @@ function Projects() {
                   )}
 
                   {/* BUTTONS */}
+
                   {(project?.github || project?.live) && (
                     <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+
                       {project?.live && (
                         <a
                           href={project.live}
@@ -146,34 +190,32 @@ function Projects() {
                           GitHub
                         </a>
                       )}
+
                     </div>
                   )}
+
                 </motion.article>
-              );
-            })}
-          </div>
-        )}
+              ))}
+            </div>
+          )}
 
-        {/* OTHER PROJECTS */}
-        {otherProjects.length > 0 && (
-          <>
-            <motion.h3
-              initial={{ opacity: 0, y: 25 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
-              className="mt-24 text-3xl font-bold text-white"
-            >
-              Other Projects
-            </motion.h3>
+          {/* OTHER PROJECTS */}
 
-            <div className="mt-10 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-              {otherProjects.map((project, index) => {
-                const technologies = Array.isArray(project?.technologies)
-                  ? project.technologies
-                  : [];
+          {!loading && otherProjects.length > 0 && (
+            <>
+              <motion.h3
+                initial={{ opacity: 0, y: 25 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6 }}
+                className="mt-24 text-3xl font-bold text-white"
+              >
+                Other Projects
+              </motion.h3>
 
-                return (
+              <div className="mt-10 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+
+                {otherProjects.map((project, index) => (
                   <motion.article
                     key={
                       project?._id ||
@@ -190,7 +232,9 @@ function Projects() {
                     whileHover={{ y: -5 }}
                     className="min-w-0 rounded-2xl border border-slate-800 bg-slate-900 p-5 transition-all duration-300 hover:border-cyan-400/60 hover:shadow-[0_0_25px_rgba(34,211,238,0.06)] sm:p-6"
                   >
+
                     {/* TOP */}
+
                     <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
                       <span className="text-sm text-cyan-400">
                         {project?.category || "Project"}
@@ -210,20 +254,23 @@ function Projects() {
                     </div>
 
                     {/* TITLE */}
+
                     <h4 className="mt-3 break-words text-xl font-semibold text-white">
                       {project?.title || "Untitled Project"}
                     </h4>
 
                     {/* DESCRIPTION */}
+
                     <p className="mt-3 break-words text-sm leading-7 text-slate-400">
                       {project?.description ||
                         "Project description coming soon."}
                     </p>
 
                     {/* TECHNOLOGIES */}
-                    {technologies.length > 0 && (
+
+                    {project.technologies.length > 0 && (
                       <div className="mt-5 flex flex-wrap gap-2">
-                        {technologies.map((tech, techIndex) => (
+                        {project.technologies.map((tech, techIndex) => (
                           <span
                             key={`${tech}-${techIndex}`}
                             className="rounded-full bg-slate-800 px-3 py-1 text-xs text-slate-400"
@@ -235,8 +282,10 @@ function Projects() {
                     )}
 
                     {/* BUTTONS */}
+
                     {(project?.github || project?.live) && (
                       <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+
                         {project?.live && (
                           <a
                             href={project.live}
@@ -258,15 +307,18 @@ function Projects() {
                             GitHub
                           </a>
                         )}
+
                       </div>
                     )}
+
                   </motion.article>
-                );
-              })}
-            </div>
-          </>
-        )}
-      </div>
+                ))}
+
+              </div>
+            </>
+          )}
+
+        </div>
       </section>
     </SectionWrapper>
   );
