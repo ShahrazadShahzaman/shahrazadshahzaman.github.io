@@ -49,15 +49,16 @@ function Projects() {
     loadProjects();
   }, []);
 
-  const featuredProjects = projects.filter(
-    (project) => project?.featured === true
-  );
+const featuredProjects = projects.filter(
+  (project) => project?.featured
+);
 
-  const otherProjects = projects.filter(
-    (project) => project?.featured !== true
-  );
+const otherProjects = projects.filter(
+  (project) => !project?.featured
+);
 
   return (
+  
     <SectionWrapper id="projects">
       <section className="bg-slate-900 py-28 px-6">
         <div className="mx-auto w-full max-w-7xl">
