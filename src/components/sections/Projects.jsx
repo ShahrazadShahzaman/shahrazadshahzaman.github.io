@@ -1,7 +1,6 @@
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { sanityClient } from "../../library/sanity";
-import SectionWrapper from "../common/sectionwrapper";
 
 function Projects() {
   const [projects, setProjects] = useState([]);
@@ -58,8 +57,14 @@ const otherProjects = projects.filter(
 
   return (
   
-    <SectionWrapper id="projects">
-      <section className="bg-slate-900 py-28 px-6">
+      <motion.section id="projects"
+  initial={{ opacity: 0, y: 80 }}
+  whileInView={{ opacity: 1, y: 0 }}
+  transition={{
+    duration: 0.8,
+    ease: "easeOut",
+  }}
+  viewport={{ once: true, amount: 0.2 }} className="bg-slate-900 py-28 px-6">
         <div className="mx-auto w-full max-w-7xl">
 
           {/* SECTION HEADER */}
@@ -315,8 +320,7 @@ transition={{
           )}
 
         </div>
-      </section>
-    </SectionWrapper>
+      </motion.section>
   );
 }
 
